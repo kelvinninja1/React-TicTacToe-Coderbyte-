@@ -53,28 +53,28 @@ const buttonStyle = {
 function Square(props) {
   const [play, setPlay] = useState("")
 
-  const handleMoves = (newPositon) => {
+  const handleMoves = (newPosition) => {
     let currentPositions = [...props.positions]
-    currentPositions[props.currentPosition] = newPositon
+    currentPositions[props.currentPosition] = newPosition
     props.setPositions([...currentPositions])
   }
 
   const handlePlay = () => {
-    if (play !== "" && play !== props.player) return
-    if (play === "" && props.plays[props.player] > 2) return
-    if (props.plays[props.player] === 3 || play !== "") {
-      if(props.plays[props.player] < 3) return
-      setPlay("")
-      handleMoves("")
-      props.plays[props.player]--
-      return
-    }
+    // Not proceed if there is a winner
+    if ((play !== "" && play !== props.player) || 
+      (play === "" && props.plays[props.player] > 2) || 
+      (play !== "" && props.plays[props.player] < 3)) return
 
-    setPlay(props.player)
-    handleMoves(props.player)
-    props.plays[props.player]++
+    const newMove = (props.plays[props.player] !== 3) ? props.player : ""
+    setPlay(newMove)
+    handleMoves("M")
+    props.plays[props.player] = (newMove !== "") ? props.plays[props.player] + 1 : props.plays[props.player] - 1
+
+    if (newMove === "") return
+
+    props.calculateWinner()
+    // Not if there is a winner
     props.switchPlayer()
-    
   }
 
   return (
@@ -89,36 +89,69 @@ function Square(props) {
 
 function Board() {
   const [player, setPlayer] = useState("X")
+  const [winner, setWinner] = useState()
   const [plays, setPlays] = useState({
     X: 0,
     O: 0
   })
   const [positions, setPositions] = useState(new Array(9))
+  console.log(positions)
 
   const switchPlayer = () => {
     setPlayer((player === "X") ? "O" : "X")
   }
 
+// declare all possible wins
+  const possibleWins = [
+    [0,1,2],
+    [3,4,5],
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+  ]
+
+  const isWinner = () => {
+    for(let i = 0; i < possibleWins.length; i++){
+      if (position[possibleWins[i][0]] === player && 
+      position[possibleWins[i][1]] === player && 
+      position[possibleWins[i][2]] === player) return true
+    }
+    return false
+  }
+
+  const calculateWinner = () => {
+    // return if number of moves is not up to 3
+    if (plays[player] !== 3) return
+    // Check if positions of current player matches vertically, horizontally and diagonally
+    if (!isWinner) return
+
+    setWinner(player)
+    
+  }
+
   return (
     <div style={containerStyle} className="gameBoard">
       <div id="statusArea" className="status" style={instructionsStyle}>Next player: <span>{ player }</span></div>
-      <div id="winnerArea" className="winner" style={instructionsStyle}>Winner: <span>None</span></div>
+      <div id="winnerArea" className="winner" style={instructionsStyle}>Winner: <span>{ winner || "None" }</span></div>
       <button style={buttonStyle}>Reset</button>
       <div style={boardStyle}>
         <div className="board-row" style={rowStyle}>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={0} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={1} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={2} setPositions={setPositions} positions={positions}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={0} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={1} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={2} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
         </div>
         <div className="board-row" style={rowStyle}>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={3} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={4} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={5} setPositions={setPositions} positions={positions}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={3} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={4} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={5} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
         </div>
         <div className="board-row" style={rowStyle}>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={6} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={7} setPositions={setPositions} positions={positions}/>
-          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={8} setPositions={setPositions} positions={positions}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={6} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={7} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
+          <Square switchPlayer={switchPlayer} player={player} plays={plays} setPlays={setPlays} currentPosition={8} setPositions={setPositions} positions={positions} calculateWinner={calculateWinner}/>
         </div>
       </div>
        <div id="playsArea" className="plays" style={instructionsStyle}>Plays: <span> X = {plays['X']} <br/> O = {plays['O']}</span></div>
