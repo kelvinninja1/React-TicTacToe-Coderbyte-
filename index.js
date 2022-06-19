@@ -67,7 +67,7 @@ function Square(props) {
 
     const newMove = (props.plays[props.player] !== 3) ? props.player : ""
     setPlay(newMove)
-    handleMoves("M")
+    handleMoves(newMove)
     props.plays[props.player] = (newMove !== "") ? props.plays[props.player] + 1 : props.plays[props.player] - 1
 
     if (newMove === "") return
@@ -95,7 +95,7 @@ function Board() {
     O: 0
   })
   const [positions, setPositions] = useState(new Array(9))
-  console.log(positions)
+  // console.log(positions)
 
   const switchPlayer = () => {
     setPlayer((player === "X") ? "O" : "X")
@@ -105,19 +105,23 @@ function Board() {
   const possibleWins = [
     [0,1,2],
     [3,4,5],
-    [0,0,0],
-    [0,0,0],
-    [0,0,0],
-    [0,0,0],
-    [0,0,0],
-    [0,0,0],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6],
   ]
 
   const isWinner = () => {
     for(let i = 0; i < possibleWins.length; i++){
-      if (position[possibleWins[i][0]] === player && 
-      position[possibleWins[i][1]] === player && 
-      position[possibleWins[i][2]] === player) return true
+      // console.log("Leticia, cum in here!!!")
+      console.log(positions[possibleWins[i][0]], positions[possibleWins[i][1]], positions[possibleWins[i][1]])
+      if (positions[possibleWins[i][0]] === player && 
+      positions[possibleWins[i][1]] === player && 
+      positions[possibleWins[i][2]] === player) return true
+
+      console.log("False")
     }
     return false
   }
@@ -126,7 +130,7 @@ function Board() {
     // return if number of moves is not up to 3
     if (plays[player] !== 3) return
     // Check if positions of current player matches vertically, horizontally and diagonally
-    if (!isWinner) return
+    if (!isWinner()) return
 
     setWinner(player)
     
