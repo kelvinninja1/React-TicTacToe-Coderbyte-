@@ -53,7 +53,7 @@ const buttonStyle = {
 function Square(props) {
   const [play, setPlay] = useState("")
 
-  const handleMoves = (newPosition) => {
+  const handleMoves = (newPosition, newPositions) => {
     let currentPositions = [...props.positions]
     currentPositions[props.currentPosition] = newPosition
     props.setPositions([...currentPositions])
@@ -67,7 +67,7 @@ function Square(props) {
 
     const newMove = (props.plays[props.player] !== 3) ? props.player : ""
     setPlay(newMove)
-    handleMoves(newMove)
+    handleMoves(newMove,)
     props.plays[props.player] = (newMove !== "") ? props.plays[props.player] + 1 : props.plays[props.player] - 1
 
     if (newMove === "") return
@@ -97,6 +97,10 @@ function Board() {
   const [positions, setPositions] = useState(new Array(9))
   // console.log(positions)
 
+  function getPositions() {
+    return positions
+  }
+
   const switchPlayer = () => {
     setPlayer((player === "X") ? "O" : "X")
   }
@@ -116,10 +120,11 @@ function Board() {
   const isWinner = () => {
     for(let i = 0; i < possibleWins.length; i++){
       // console.log("Leticia, cum in here!!!")
-      console.log(positions[possibleWins[i][0]], positions[possibleWins[i][1]], positions[possibleWins[i][1]])
-      if (positions[possibleWins[i][0]] === player && 
-      positions[possibleWins[i][1]] === player && 
-      positions[possibleWins[i][2]] === player) return true
+      const newPositions = getPositions
+      console.log(newPositions[possibleWins[i][0]], newPositions[possibleWins[i][1]], newPositions[possibleWins[i][2]])
+      if (newPositions[possibleWins[i][0]] === player && 
+      newPositions[possibleWins[i][1]] === player && 
+      newPositions[possibleWins[i][2]] === player) return true
 
       console.log("False")
     }
